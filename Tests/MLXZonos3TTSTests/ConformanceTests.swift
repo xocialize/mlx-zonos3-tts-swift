@@ -96,14 +96,14 @@ final class MaterializationConformanceTests: XCTestCase {
         XCTAssertTrue(report.passed, report.summary)
     }
 
-    /// The source is in a namespace we control; it is NOT published yet, and the code says so.
-    func testWeightSourceIsOursAndMarkedUnpublished() {
+    /// The source is the published checkpoint at its pin, in a namespace we control.
+    func testWeightSourceIsThePublishedCheckpointAtItsPin() {
         let sources = Zonos3Configuration().weightSources
         XCTAssertEqual(sources.map(\.role), ["checkpoint"])
-        XCTAssertTrue(Zonos3Configuration.repo.hasPrefix("mlx-community/"))
+        XCTAssertEqual(sources.first?.repo, "mlx-community/ZONOS3-Mini-swift-ptq")
+        XCTAssertEqual(sources.first?.revision, "a95067477f04c1feff6c3a16a431a7e409bee72a")
         XCTAssertNotEqual(Zonos3Configuration.repo, "mlx-community/ZONOS3-Mini", "that repository is mlx-audio's conversion, a different layout")
-        XCTAssertFalse(Zonos3Configuration.isPublished, "flip this, and pin a revision, in the publish change")
-        XCTAssertNil(Zonos3Configuration.revisionPin)
+        XCTAssertTrue(Zonos3Configuration.isPublished)
         XCTAssertEqual(Zonos3Configuration(revision: "abc").weightSources.first?.revision, "abc")
     }
 

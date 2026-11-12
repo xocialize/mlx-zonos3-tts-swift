@@ -2,6 +2,7 @@
 // cancel → evict), with `phys_footprint` read at each point. This is where the manifest's footprint constants come from.
 //
 //   zonos3-gates validate <checkpoint dir> <reference clip> <out dir>
+//   zonos3-gates validate-store <models root> <reference clip> <out dir>     (downloads the published checkpoint)
 import Darwin
 import Foundation
 import MLX
@@ -17,7 +18,7 @@ func physGB() -> (now: Double, peak: Double) {
     return (Double(info.phys_footprint) / 1e9, Double(info.ledger_phys_footprint_peak) / 1e9)
 }
 
-func validate(checkpoint: URL, reference: URL, out: URL) async throws -> Bool {
+func validate(checkpoint: URL?, store: URL?, reference: URL, out: URL) async throws -> Bool {
     var ok = true
     func check(_ name: String, _ pass: Bool, _ detail: String = "") {
         ok = ok && pass
@@ -26,9 +27,16 @@ func validate(checkpoint: URL, reference: URL, out: URL) async throws -> Bool {
     func f(_ v: Double) -> String { String(format: "%.2f", v) }
     try FileManager.default.createDirectory(at: out, withIntermediateDirectories: true)
     let engine = MLXServeEngine()   // the default policy (.permissiveOnly, .advisory)
+    if let store { await engine.useModelStore(ModelStore(root: store)) }
     let pid = try await engine.register(Zonos3Package.registration, configuration: Zonos3Configuration(modelDirectory: checkpoint), id: PackageID("zonos3-mini"))
     let advisories = await engine.licenseAdvisories
     check("registered under the default licence policy with no advisory", advisories.isEmpty, advisories.map(\.summary).joined(separator: "; "))
+    if await engine.needsDownload(.tts, package: pid) {
+        let t = Date()
+        _ = try await engine.materialize(package: pid)
+        print("materialized in \(f(Date().timeIntervalSince(t))) s")
+        check("nothing left to download", !(await engine.needsDownload(.tts, package: pid)))
+    }
     let before = physGB().now
     var t0 = Date()
     try await engine.prepare(.tts, package: pid)

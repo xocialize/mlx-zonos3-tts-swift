@@ -46,10 +46,9 @@ quantized tensors' bit widths), `tokenizer.json`.
 `temperature`, `topK`, `topP`, `speakingRate`, `loudnessLUFS`, `fmaxHz`, `maxFrames`, `voiceCacheKey`,
 `evictVoiceCacheKeys` (caller-keyed voice cache, 4 keys).
 
-**Not published.** `Zonos3Configuration.repo` is a placeholder name and `isPublished` is false; the package loads from
-`modelDirectory` only. Publishing needs the operator's go-ahead and a name, then: upload the checkpoint without
-`codec-full/`, pin `revisionPin`, flip `isPublished`, verify hashes from a fresh download, and ask mlx-engine for the
-registry row.
+**Published 2026-11-11:** weights `mlx-community/ZONOS3-Mini-swift-ptq` @ `a95067477f04c1feff6c3a16a431a7e409bee72a`
+(without `codec-full/`; LFS SHA-256s equal to the gated local files, and a fresh download through the engine passes
+`zonos3-gates validate-store` 27 / 27); code `xocialize/mlx-zonos3-tts-swift` v0.1.0.
 
 Download globs name each weight directory (`lm/*.safetensors` …): a glob without a `/` also matches on the basename, and
 a bare `model.safetensors` would pull the 2.2 GB full decoder as well. The backbone lives in `lm/` for that reason.

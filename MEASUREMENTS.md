@@ -56,3 +56,9 @@ The same seed returns the same bytes; `run()` and the stream of the same seed ag
 Engine-path takes scored with the fleet scorers (one take each): cloned from the 24 kHz reference through
 AVAudioConverter, cosine to Roxy 0.792 / 0.813; `speakingRate` 24 vs 9 gives 3.93 s vs 5.70 s for the same line; word
 error 0 on all six.
+
+## Fresh download (`zonos3-gates validate-store`, empty models root)
+
+The engine materialized the published checkpoint in 252.6 s (1.28 GB; only the three declared weight files, not the
+full decoder), then passed 27 / 27; resident 1.61 GB, activation 1.17 GB. The downloaded weight files hash-equal the
+local conversion.

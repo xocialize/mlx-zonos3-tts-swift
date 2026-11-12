@@ -12,7 +12,7 @@ public struct Zonos3Configuration: PackageConfiguration, ModelStorable, QuantCon
     /// The backbone's tier. Only `.int4` is offered: Zyphra's own post-training-quantized release (4-bit experts, 8-bit
     /// mixers and head), repacked exactly; the decoder and speaker encoder are fp16 / fp32 inside it.
     public var quant: Quant
-    /// Revision of the weights repo; nil = `revisionPin`.
+    /// Revision of the weights repo; nil = the published, hash-verified commit (`revisionPin`).
     public var revision: String?
     /// Explicit checkpoint directory (the converter's layout) — never touches the network.
     public var modelDirectory: URL?
@@ -28,12 +28,10 @@ public struct Zonos3Configuration: PackageConfiguration, ModelStorable, QuantCon
         self.modelsRootDirectory = modelsRootDirectory; self.cacheLimitBytes = cacheLimitBytes
     }
 
-    /// NOT PUBLISHED YET (2026-11-11): the name is a placeholder until the operator authorizes a publish and its name
-    /// (`mlx-community/ZONOS3-Mini` is mlx-audio's conversion, a different layout). Until then the package loads from
-    /// `modelDirectory` only, and there is no revision pin.
+    /// The published checkpoint (2026-11-11): hash-equal to the gated local conversion, verified from a fresh download.
     public static let repo = "mlx-community/ZONOS3-Mini-swift-ptq"
-    public static let revisionPin: String? = nil
-    public static let isPublished = false
+    public static let revisionPin: String? = "a95067477f04c1feff6c3a16a431a7e409bee72a"
+    public static let isPublished = true
     /// The upstream repository and revision the converter read.
     public static let upstreamRepo = "Zyphra/ZONOS3-Mini"
     public static let upstreamRevision = "7146a686b62bcb0661528fa300984e815e10152b"

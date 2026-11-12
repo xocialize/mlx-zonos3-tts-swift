@@ -3,7 +3,7 @@
 This package is a Swift-MLX port of ZONOS3-Mini.
 
 - **Model weights** — Zyphra, Inc., Apache-2.0 (`Zyphra/ZONOS3-Mini`). Converted without change of values from the
-  release GGUFs (`Tools/convert_gguf.py`).
+  release GGUFs (`Tools/convert_gguf.py`) and published as `mlx-community/ZONOS3-Mini-swift-ptq`.
 - **Port source** — Zyphra's ZONOS3-Mini runtime, MIT, Copyright (c) 2026 Zyphra, Inc.
   (`github.com/Zyphra/ZONOS3-Mini` @ `4c66ceac`). The Swift files are translations of Zyphra's own
   `servers/mlx/src/zonos3_mlx` (backbone, codec decoder, speaker encoder, sampler, scheduler) and of

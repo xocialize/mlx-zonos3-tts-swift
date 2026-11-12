@@ -1,10 +1,12 @@
 # mlx-zonos3-tts-swift
 
 Zyphra's [ZONOS3-Mini](https://huggingface.co/Zyphra/ZONOS3-Mini) — real-time multilingual text-to-speech at 44.1 kHz —
-on Swift-MLX. About 9–10× real time and ~30 ms to first audio on an M5 Max, 3.3 GB peak with the small decoder.
+on Swift-MLX. About 9–10× real time and tens of milliseconds to first audio on an M5 Max; 1.6 GB resident, 2.8 GB
+peak through MLXEngine.
 
-Status: the core (`Zonos3Core`) is parity-gated against Zyphra's own MLX implementation; the MLXEngine package is not
-written yet. Not published; weights are a local conversion.
+Status: the core (`Zonos3Core`) is parity-gated against Zyphra's own MLX implementation, and `MLXZonos3TTS` serves it on
+MLXEngine's `tts` capability (27 named voices, cloning from a clip, streaming). **Not published**: weights are a local
+conversion and the package loads from an explicit directory.
 
 ```swift
 let tts = try Zonos3TTS(directory: checkpointURL)

@@ -88,7 +88,7 @@ public final class Zonos3LM {
     /// Optional capture of intermediate tensors (parity gates): name -> array, as upstream's `capture`.
     public var capture: [String: MLXArray]? = nil
 
-    public init(config: CheckpointConfig, file: String = "model.safetensors") throws {
+    public init(config: CheckpointConfig, file: String = "lm/model.safetensors") throws {
         let quant = config.quantized(file)
         f = try WeightFile(url: config.root.appendingPathComponent(file), quantized: quant) { name, shape in
             // float32 tables: embeddings, AttnRes queries, 1-D tensors and the GDN conv taps; the rest are matmul weights

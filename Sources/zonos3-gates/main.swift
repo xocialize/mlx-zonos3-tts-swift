@@ -17,6 +17,13 @@ func relErr(_ a: MLXArray, _ b: MLXArray) -> Float {
 let args = CommandLine.arguments
 guard args.count >= 3 else { err("usage: zonos3-gates --s0|--s1-lm|--s1-codec|--s1-spk|--s1-tok|--s2-gen|--s2-prompt <checkpoint dir> <goldens dir>\n       zonos3-gates --synth <checkpoint dir> <out.wav> <text> [--ref ref.wav] [--seed N] [--full] [--runs N]"); exit(2) }
 let mode = args[1]
+if mode == "validate" {
+    guard args.count >= 5 else { err("validate <checkpoint dir> <reference clip> <out dir>"); exit(2) }
+    do {
+        let ok = try await validate(checkpoint: URL(fileURLWithPath: args[2]), reference: URL(fileURLWithPath: args[3]), out: URL(fileURLWithPath: args[4]))
+        exit(ok ? 0 : 1)
+    } catch { err("error: \(error)"); exit(1) }
+}
 let ckpt = URL(fileURLWithPath: args[2])
 var failed = false
 func check(_ name: String, _ ok: Bool, _ detail: String) {

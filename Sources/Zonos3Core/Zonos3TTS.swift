@@ -138,7 +138,7 @@ public final class Zonos3TTS {
         checkpoint = try CheckpointConfig(directory: directory)
         lm = try Zonos3LM(config: checkpoint)
         decoder = try CodecDecoder(config: checkpoint, file: fullDecoder ? "codec-full/model.safetensors" : "codec/model.safetensors")
-        let sha = (try checkpoint.meta("model.safetensors"))["tokenizer_sha256"] as? String
+        let sha = (try checkpoint.meta("lm/model.safetensors"))["tokenizer_sha256"] as? String
         tokenizer = try SuperBPETokenizer(url: directory.appendingPathComponent("tokenizer.json"), sha256: sha)
         guard lm.config.textVocab == 8192 + 4 else { throw Zonos3Error.invalid("SuperBPE ID convention mismatch") }
     }
@@ -187,8 +187,10 @@ public final class Zonos3TTS {
 
     /// Synthesize `text`. `onChunk` receives each PCM chunk as it becomes final (44.1 kHz mono, output gain and soft
     /// limiter applied); returning false stops the generation.
+    /// `onRow` runs once per generated row (15 rows = 1 s of audio) with the row count; what it throws stops the
+    /// generation and propagates unchanged (the host's progress and cancellation seam).
     public func synthesize(text: String, speakerEmbedding: [Float]?, options: SynthesisOptions = SynthesisOptions(),
-                           onChunk: (([Float]) -> Bool)? = nil) throws -> SynthesisResult {
+                           onRow: ((Int) throws -> Void)? = nil, onChunk: (([Float]) -> Bool)? = nil) throws -> SynthesisResult {
         let c = lm.config
         let t0 = Date()
         let (prompt, prefill) = try self.prompt(text: text, speakerEmbedding: speakerEmbedding, conditions: options.conditions, silencePrefillFrames: options.silencePrefillFrames)
@@ -211,6 +213,7 @@ public final class Zonos3TTS {
         while !finished && !stopped {
             try Task.checkCancellation()
             let r = try gen.next()
+            try onRow?(gen.generated)
             eos = r.eosFrame; finished = r.finished
             emit(try ps.push(r.row, eosFrame: r.eosFrame))
         }
